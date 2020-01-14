@@ -1,12 +1,12 @@
 import sys
 import time
 import json
-# Work with Python 3.6
 import discord
 import requests
 
-with open("keys.json", "r") as read_file:
+with open('.\meppyBTW_AM_BOT\keys.json', 'r') as read_file:
     TOKEN = json.load(read_file)["TOKEN"]
+
 #jstris stuff
 jstrisModes = [
     [None],
@@ -44,8 +44,9 @@ def create_embed(r, type, mode):
 
 
 class Mode:
-    def __init__(self,mode,*types) :
+    def __init__(self,mode,id,*types) :
         self.mode = mode
+        self.id = id
         self.types = types
     
     def get_type(type):
@@ -80,7 +81,7 @@ async def on_message(message):
     if message.content.startswith('!help'):
         print('help')
         await channel.send('''
-            ```py
+            ```py   
 
 help: shows commands
 pepega: just run it
@@ -115,6 +116,5 @@ async def on_ready():
     print('Logged in as')
     print(client.user.name)
     print(client.user.id)
-    print('------')
 
 client.run(TOKEN)
