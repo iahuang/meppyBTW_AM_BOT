@@ -67,17 +67,27 @@ async def on_message(message):
     message_id = message.id
     channel = message.channel
     
+    if message.content.startswith('!stop'):
+        print('stop')
+        sys.exit()
+
     #for kirigo the 0iq
     gayId = 115253155524116488
     if message.author.id == gayId:
-        await channel.send("<@{gayId}> is gay")
+        await channel.send("<@" + str(gayId) + "> is gay")
 
     sexyId = 513442537483272224
     if message.author.id == sexyId:
-        await channel.send("<@{sexyId}> is gay")
+        await channel.send("<@"+ str(sexyId) + "> is sexy")
 
     if message.content.lower().startswith('no u'):
         await channel.send('no u')
+
+    #commands after
+    if not message.content.startswith('!'):
+        return
+
+    print("message")
 
     if message.content.startswith('!help'):
         print('help')
@@ -95,10 +105,6 @@ everyone: ping everyone
     if message.content.startswith('!everyone'):
         print('everyone')
         await channel.send('haha you thought this would ping everyone? Nice try buddy')
-
-    if message.content.startswith('!stop'):
-        print('stop')
-        sys.exit()
     
     if message.content.startswith('!sprint'):
         args = message.content.split(' ')[1:]
