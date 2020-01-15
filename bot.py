@@ -25,9 +25,9 @@ def get_records(username, mode, type):
     r = requests.get(url)
     return r.json()
 
-def create_embed(r, type, mode):
+def create_embed(r, play, type):
     
-    embed = discord.Embed(title=r[name], colour=discord.Colour(0xe67e22), url="https://jstris.jezevec10.com/u/{r[name]}", description="Displaying {type} {mode} statistics for player {r[name]} on Jstris")
+    embed = discord.Embed(title=r[name], colour=discord.Colour(0xe67e22), url="https://jstris.jezevec10.com/u/{r[name]}", description="Displaying {play} {type} statistics for player {r[name]} on Jstris")
 
     embed.add_field(name="Best", value=str(r[min]), inline=True)
     embed.add_field(name="Worst", value=str(r[max]), inline=True)
@@ -54,11 +54,6 @@ class Mode:
             return types.index(type)
         except ValueError:
             return None
-    
-
-
-
-
 
 
 client = discord.Client()
@@ -72,8 +67,14 @@ async def on_message(message):
     message_id = message.id
     channel = message.channel
     
-    if message.author.id == 115253155524116488:
-        await channel.send("<@115253155524116488> is gay")
+    #for kirigo the 0iq
+    gayId = 115253155524116488
+    if message.author.id == gayId:
+        await channel.send("<@{gayId}> is gay")
+
+    sexyId = 513442537483272224
+    if message.author.id == sexyId:
+        await channel.send("<@{sexyId}> is gay")
 
     if message.content.lower().startswith('no u'):
         await channel.send('no u')
@@ -81,9 +82,7 @@ async def on_message(message):
     if message.content.startswith('!help'):
         print('help')
         await channel.send('''
-            ```py   
-
-help: shows commands
+```help: shows commands
 pepega: just run it
 everyone: ping everyone
 ```
@@ -109,7 +108,12 @@ everyone: ping everyone
         
         record_data = get_records(args[0],1,1)
 
-        await channel.send(f'''User "{args[0]}" has a 40L pb of {record_data['min']}s''')
+        try:
+            await channel.send(f'''{args[0]} has a 40L pb of {record_data['min']}s''')
+            #result = create_embed(record_data,1,1)  
+            #await channel.send(result) 
+        except:
+            await channel.send('Invalid username')
 
 @client.event
 async def on_ready():
