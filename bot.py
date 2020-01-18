@@ -9,6 +9,8 @@ with open('.\keys.json', 'r') as read_file:
     keys = json.load(read_file)
     TOKEN = keys["TOKEN"]   
     OWNER = keys["OWNER"]
+    GAY = keys["GAY"]
+    SEXY = keys["SEXY"]
     read_file.close()
 
 
@@ -42,14 +44,11 @@ async def on_message(message):
         print('stop')
         sys.exit()
 
-    #for kirigo the 0iq
-    gayId = 115253155524116488
-    if message.author.id == gayId:
-        await channel.send("<@" + str(gayId) + "> is gay")
+    if message.author.id == GAY:
+        await channel.send(f"<@{str(GAY)}> is gay")
 
-    sexyId = 513442537483272224
-    if message.author.id == sexyId:
-        await channel.send("<@"+ str(sexyId) + "> is sexy waifu")
+    if message.author.id == SEXY:
+        await channel.send(f"<@{str(sexyId)}> is sexy waifu")
 
     if message.content.lower().startswith('no u'):
         await channel.send('no u')
