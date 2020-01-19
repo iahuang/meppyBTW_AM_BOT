@@ -14,20 +14,6 @@ with open('.\keys.json', 'r') as read_file:
     read_file.close()
 
 
-#bot stuff
-def embed_test():
-    embed = discord.Embed(title="title ~~(did you know you can have markdown here too?)~~", colour=discord.Colour(0x30298a), url="https://discordapp.com", description="this supports [named links](https://discordapp.com) on top of the previously shown subset of markdown. ```\nyes, even code blocks```")
-
-    embed.set_footer(text="footer text", icon_url="https://cdn.discordapp.com/embed/avatars/0.png")
-
-    embed.add_field(name="🤔", value="some of these properties have certain limits...")
-    embed.add_field(name="🙄", value="an informative error should show up, and this view will remain as-is until all issues are fixed")
-    embed.add_field(name="<:pepega:667519589856313375>", value="these last two", inline=True)
-    embed.add_field(name="<:pepega:667519589856313375>", value="are inline fields", inline=True)
-
-    return embed
-
-
 
 client = discord.Client()
 
@@ -68,7 +54,7 @@ async def on_message(message):
 
     if message.content.startswith('!pepega'):
         print('pepega') 
-        await channel.send('<@' + str(message.author.id) + '> is supa pepega')
+        await channel.send(f'<@{message.author.id}> is supa pepega')
         return
 
     if message.content.startswith('!everyone'):
@@ -78,25 +64,32 @@ async def on_message(message):
     
     if message.content.startswith('!sprint'):
         args = message.content.split(' ')[1:]
-        if len(args) < 1:
-            await channel.send('No user specified')
-            print("sprint no user")
+        if len(args) < 2:
+            await channel.send('Missing argument')
+            print("sprint no arguments")
             return
         username = str(args[0])
+        print(username)
+        mode = str(args[1])
+        print(mode)
 
         try:
-            print("1")s
-            result = jstris.create_embed(username,1,1)  
-            print("2")
-            await channel.send(embed=result) 
-        except:
+            result = jstris.sprint(username,mode)  
+            await channel.send(embed=result)
+        except jstris.ModeError:
+            print(f'sprint invalid mode {mode}')
+            await channel.sent('Invalid Mode')
+        except jstris.UsernameError:
             print(f'sprint invalid username {username}')
             await channel.send('Invalid username')
+        #except: 
+        #    print('sprint went very wrong')
+        #    await channel.send('Unknown Error')
         return
 
     if message.content.startswith('!embed'):
 
-        embed = embed_test()
+        embed = jstris.embed_test()
         await channel.send(embed=embed)
         return
     
