@@ -26,18 +26,23 @@ async def on_message(message):
     message_id = message.id
     channel = message.channel
     
-    if message.content.startswith('!stop') :
+    if message.content.startswith('!stop') and message.author.id == OWNER:
         print('stop')
         sys.exit()
 
     if message.author.id == GAY:
-        await channel.send(f"<@{str(GAY)}> is gay")
+        await channel.send(f"<@{message.author.id}> is gay")
 
     if message.author.id == SEXY:
-        await channel.send(f"<@{str(sexyId)}> is sexy waifu")
+        await channel.send(f"<@{message.author.id}> is sexy waifu")
 
-    if message.content.lower().startswith('no u'):
+    if message.content.lower().startswith('no u '):
         await channel.send('no u')
+    
+    if message.content.count('@everyone') > 0:
+        for i in range(5):
+            await channel.send(f"<@{message.author.id}> is bad")
+        return
 
     #commands after
     if not message.content.startswith('!'):
@@ -45,7 +50,7 @@ async def on_message(message):
 
     if message.content.startswith('!help'):
         print('help')
-        await channel.send('```help: shows commands\npepega: just run it\nsprint [username]```')
+        await channel.send('```help: shows commands\npepega: just run it\nsprint [username] [20L/40L/100L/1000L, defaults to 40L]\ncheese [username] [10L/18L/100L, defaults to 100L]```')
         return
 
     if message.content.startswith('!owner'):
@@ -64,27 +69,92 @@ async def on_message(message):
     
     if message.content.startswith('!sprint'):
         args = message.content.split(' ')[1:]
-        if len(args) < 2:
-            await channel.send('Missing argument')
+        if len(args) < 1:
+            await channel.send('Missing username')
             print("sprint no arguments")
             return
         username = str(args[0])
-        print(username)
-        mode = str(args[1])
-        print(mode)
+        if len(args) < 2:
+            mode = '40L'
+        else:
+            mode = str(args[1])
+        print(username,mode)
 
         try:
             result = jstris.sprint(username,mode)  
             await channel.send(embed=result)
         except jstris.ModeError:
             print(f'sprint invalid mode {mode}')
-            await channel.sent('Invalid Mode')
+            await channel.send('Invalid Mode')
         except jstris.UsernameError:
             print(f'sprint invalid username {username}')
+            await channel.send(f'Invalid username')
+        return
+
+    if message.content.startswith('!cheese'):
+        args = message.content.split(' ')[1:]
+        if len(args) < 1:
+            await channel.send('Missing username')
+            print("cheese no arguments")
+            return
+        username = str(args[0])
+        if len(args) < 2:
+            mode = '100L'
+        else:
+            mode = str(args[1])
+        print('cheese',username,mode)
+
+        try:
+            result = jstris.cheese(username,mode)  
+            await channel.send(embed=result)
+        except jstris.ModeError:
+            print(f'cheese invalid mode {mode}')
+            await channel.send('Invalid Mode')
+        except jstris.UsernameError:
+            print(f'cheese invalid username {username}')
             await channel.send('Invalid username')
-        #except: 
-        #    print('sprint went very wrong')
-        #    await channel.send('Unknown Error')
+        return
+
+    if message.content.startswith('!survival'):
+        args = message.content.split(' ')[1:]
+        if len(args) < 1:
+            await channel.send('Missing username')
+            print('survival no arguments')
+            return
+        username = str(args[0])
+        mode = ''
+        print('survival',username,mode)
+
+        try:
+            result = jstris.survival(username,mode)  
+            await channel.send(embed=result)
+        except jstris.ModeError:
+            print(f'survival invalid mode {mode}')
+            await channel.send('Invalid Mode')
+        except jstris.UsernameError:
+            print(f'survival invalid username {username}')
+            await channel.send('Invalid username')
+        return
+
+    if message.content.startswith('!ultra'):
+        args = message.content.split(' ')[1:]
+        if len(args) < 1:
+            await channel.send('Missing username')
+            print('ultra no arguments')
+            return
+        username = str(args[0])
+        mode = ''
+        print('ultra',username,mode)
+
+        try:
+            result = jstris.ultra(username,mode)  
+            await channel.send(embed=result)
+        except jstris.ModeError:
+            print(f'ultra invalid mode {mode}')
+            await channel.send('Invalid Mode')
+        except jstris.UsernameError:
+            print(f'ultra invalid username {username}')
+            await channel.send('Invalid username')
         return
 
     if message.content.startswith('!embed'):

@@ -9,40 +9,31 @@ class ModeError(Exception):
 class UsernameError(Exception):
     pass
 
-class InvalidMode(Exception):
+class APIError(Exception):
     pass
 
-class Mode:
+class Mode: 
     #keep parameter names consistent with jstris url
-    def __init__(self,name,play,*modes) :
+    def __init__(self,name,play,modes) :
         self.name = name
         self.play = play
         self.modes = modes
     
-    def get_mode(mode):
+    def get_mode(self,mode):
         #raises ValueError
-        return modes.index(mode)
+        return self.modes.index(mode)
 
-jstris_modes = [
-    [None],
-    ['Sprint','40L','20L','100L','1000L'],
-    ['Freeplay'],
-    ['Cheese','10L','18L','100L'],
-    ['Survival','Survival'],
-    ['Ultra','Ultra'],
-    ['Maps','no maps lol'], 
-    ['Tsd','20TSD']]
+SPRINT = Mode('Sprint',1,['0L','40L','20L','100L','1000L'])
+CHEESE = Mode('Cheese',3,['0L','10L','18L','100L'])
+SURVIVAL = Mode('Survival',4,['0L',''])
+ULTRA = Mode('Ultra',5,['0L',''])
+TSD = '7useless api'
+PC = '8no api'
 
-SPRINT = Mode('Sprint',1,['40L','20L','100L','1000L'])
-CHEESE = Mode('Cheese',3,['10L','18L','100L'])
-SURVIVAL = 'sur'
-ULTRA = 'ult'
-TSD = 'useless api'
-
-MODES = [None,SPRINT,'freeplay',CHEESE,SURVIVAL,ULTRA,'maps',TSD]
+MODES = [None,SPRINT,'freeplay',CHEESE,SURVIVAL,ULTRA,'maps',TSD    ,PC]
 
 def get_records(username, play, mode):
-    url = f'https://jstris.jezevec10.com/api/u/{username}/records/{play}?mode={mode}'
+    url = f'https://jstris.jezevec10.com/api/u/{username}/records/{play}?mode={mode}'   
 
     r = requests.get(url)
     return r.json()
@@ -50,6 +41,12 @@ def get_records(username, play, mode):
 def create_embed(username, play, mode):
 
     r = get_records(username, play, mode)
+    #print(play)
+    #print(mode)
+
+    if 'error' in r:
+        print(r['error'])
+        raise UsernameError()
 
     try:
         #try tenth first because ones can't exist without tenths? not sure if it works that way
@@ -64,11 +61,14 @@ def create_embed(username, play, mode):
         mode_tenth_freq = "n/a"
     days = r['days'] or 1
 
+    playName = MODES[play].name
+    modeName = MODES[play].modes[mode]
+
     #integrate stats thing better later
     embed = discord.Embed(title=r['name'],
             colour=discord.Colour(0xe67e22),
-            url=f"https://jstris.jezevec10.com/u/{r['name']}",
-            description=f"Displaying {MODES[play]['modes'][mode]} {MODES[play]['name']} statistics for player {r['name']} on Jstris") 
+            url=f"https://jstris.jezevec10.com/u/{r['name']}?mode={play}",
+            description=f"Displaying [{modeName} {playName}](https://jstris.jezevec10.com/?play={play}&mode={mode}) [statistics](https://jstris.jezevec10.com/{MODES[play].name.casefold()}?display=5&user={r['name']}&lines={modeName}) for player [{r['name']}](https://jstris.jezevec10.com/u/{r['name']}) on [Jstris](https://jstris.jezevec10.com)") 
     
     embed.add_field(name="Best", value=r['min'] if play != 4 and play != 5 else r['max'], inline=True)
     embed.add_field(name="Worst", value=r['max'] if play != 4 and play != 5  else r['min'], inline=True)
@@ -92,29 +92,65 @@ def sprint(username,mode):
     try:
         modeIndex = SPRINT.get_mode(mode)
     except ValueError:
-        raise ModeError('ModeError')
+        raise ModeError()
 
     try:
         embed = create_embed(username,SPRINT.play,modeIndex)
-    except:
-        raise UsernameError('UsernameError') 
+    except UsernameError:
+        raise UsernameError()
 
     return embed
 
-def cheese(username,type):
-    return
+def cheese(username,mode):
+    try:
+        modeIndex = CHEESE.get_mode(mode)
+    except ValueError:
+        raise ModeError()
 
-def survival(username):
-    return
+    try:
+        embed = create_embed(username,CHEESE.play,modeIndex)
+    except UsernameError:
+        raise UsernameError()
 
-def ultra(username):
-    return
+    return embed
+
+def survival(username,mode):
+    try:
+        modeIndex = SURVIVAL.get_mode(mode)
+    except ValueError:
+        raise ModeError()
+
+    try:
+        embed = create_embed(username,SURVIVAL.play,modeIndex)
+    except UsernameError:
+        raise UsernameError()
+
+    return embed
+
+def ultra(username,mode):
+    try:
+        modeIndex = ULTRA.get_mode(mode)
+    except ValueError:
+        raise ModeError()
+
+    try:
+        embed = create_embed(username,ULTRA.play,modeIndex)
+    except UsernameError:
+        raise UsernameError()
+
+    return embed
 
 def tsd(username):
-    return
+    return "muda"
+
+def pc(username):
+    return "muda"
 
 def embed_test():
-    embed = discord.Embed(title="title ~~(did you know you can have markdown here too?)~~", colour=discord.Colour(0x30298a), url="https://discordapp.com", description="this supports [named links](https://discordapp.com) on top of the previously shown subset of markdown. ```\nyes, even code blocks```")
+    embed = discord.Embed(title="title ~~(did you know you can have markdown here too?)~~",
+            colour=discord.Colour(0x30298a),
+            url="https://discordapp.com",
+            description="this supports [named links](https://discordapp.com) on top of the previously shown subset of markdown. ```\nyes, even code blocks```")
 
     embed.set_footer(text="footer text", icon_url="https://cdn.discordapp.com/embed/avatars/0.png")
 
@@ -124,3 +160,5 @@ def embed_test():
     embed.add_field(name="<:pepega:667519589856313375>", value="are inline fields", inline=True)
 
     return embed
+
+#print(SPRINT.modes[1])
