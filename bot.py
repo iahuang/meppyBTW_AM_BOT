@@ -81,7 +81,7 @@ async def on_message(message):
         print(username,mode)
 
         try:
-            result = jstris.sprint(username,mode)  
+            result = jstris.SPRINT.get_mode_embed(username,mode)
             await channel.send(embed=result)
         except jstris.ModeError:
             print(f'sprint invalid mode {mode}')
@@ -105,7 +105,7 @@ async def on_message(message):
         print('cheese',username,mode)
 
         try:
-            result = jstris.cheese(username,mode)  
+            result = jstris.CHEESE.get_mode_embed(username,mode)
             await channel.send(embed=result)
         except jstris.ModeError:
             print(f'cheese invalid mode {mode}')
@@ -126,7 +126,7 @@ async def on_message(message):
         print('survival',username,mode)
 
         try:
-            result = jstris.survival(username,mode)  
+            result = jstris.SURVIVAL.get_mode_embed(username,mode)
             await channel.send(embed=result)
         except jstris.ModeError:
             print(f'survival invalid mode {mode}')
@@ -147,7 +147,7 @@ async def on_message(message):
         print('ultra',username,mode)
 
         try:
-            result = jstris.ultra(username,mode)  
+            result = jstris.ULTRA.get_mode_embed(username,mode)
             await channel.send(embed=result)
         except jstris.ModeError:
             print(f'ultra invalid mode {mode}')

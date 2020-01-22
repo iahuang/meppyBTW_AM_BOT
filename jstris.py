@@ -14,7 +14,7 @@ class APIError(Exception):
 
 class Mode: 
     #keep parameter names consistent with jstris url
-    def __init__(self,name,play,modes) :
+    def __init__(self,name,play,modes):
         self.name = name
         self.play = play
         self.modes = modes
@@ -22,123 +22,84 @@ class Mode:
     def get_mode(self,mode):
         #raises ValueError
         return self.modes.index(mode)
+    
+    def get_records(username, play, mode):
+        url = f'https://jstris.jezevec10.com/api/u/{username}/records/{play}?mode={mode}'   
+
+        r = requests.get(url)
+        return r.json()
+
+    def create_embed(self, username, mode):
+        play = self.play
+        r = Mode.get_records(username, play, mode)
+        #print(play)
+        #print(mode)
+
+        if 'error' in r:
+            print(r['error'])
+            raise UsernameError()
+
+        try:
+            #try tenth first because ones can't exist without tenths? not sure if it works that way
+            mode_tenth_time = r['mode']['0.1'][0]
+            mode_tenth_freq = r['mode']['0.1'][1]
+            mode_one_time = r['mode']['1'][0]
+            mode_one_freq = r['mode']['1'][1]
+        except:
+            mode_one_time = "n/a"
+            mode_one_freq = "n/a"
+            mode_tenth_time = "n/a"
+            mode_tenth_freq = "n/a"
+        days = r['days'] or 1
+
+        playName = self.name
+        modeName = self.modes[mode]
+
+        #integrate stats thing better later
+        embed = discord.Embed(title=r['name'],
+                colour=discord.Colour(0xe67e22),
+                url=f"https://jstris.jezevec10.com/u/{r['name']}?mode={play}",
+                description=f"Displaying [{modeName} {playName}](https://jstris.jezevec10.com/?play={play}&mode={mode}) [statistics](https://jstris.jezevec10.com/{playName.casefold()}?display=5&user={r['name']}&lines={modeName}) for player [{r['name']}](https://jstris.jezevec10.com/u/{r['name']}) on [Jstris](https://jstris.jezevec10.com)") 
+        
+        embed.add_field(name="Best", value=r['min'] if play != 4 and play != 5 else r['max'], inline=True)
+        embed.add_field(name="Worst", value=r['max'] if play != 4 and play != 5  else r['min'], inline=True)
+        embed.add_field(name="Average", value=r['avg'], inline=True)
+
+        embed.add_field(name="Total Games", value=r['games'], inline=True)
+        embed.add_field(name="Mode (1s)", value= mode_one_time, inline=True)
+        embed.add_field(name="Freq (1s)", value= mode_one_freq, inline=True)
+
+        embed.add_field(name="Days of playing", value=r['days'], inline=True)
+        embed.add_field(name="Mode (0.1s)", value=mode_tenth_time,  inline=True)
+        embed.add_field(name="Freq (0.1s)", value= mode_tenth_freq, inline=True)
+
+        embed.add_field(name="Time spent(sec lol)", value=r['sum'], inline=True)
+        embed.add_field(name="Avg. spent/day", value=r['sum']/days, inline=True)
+        embed.add_field(name="Avg. games/day", value=r['games']/days, inline=True)
+
+        return embed
+
+    def get_mode_embed(self,username,mode):
+        try:
+            modeIndex = self.get_mode(mode)
+        except ValueError:
+            raise ModeError()
+
+        try:
+            embed = self.create_embed(username,modeIndex)
+        except UsernameError:
+            raise UsernameError()
+
+        return embed       
 
 SPRINT = Mode('Sprint',1,['0L','40L','20L','100L','1000L'])
 CHEESE = Mode('Cheese',3,['0L','10L','18L','100L'])
 SURVIVAL = Mode('Survival',4,['0L',''])
 ULTRA = Mode('Ultra',5,['0L',''])
-TSD = '7useless api'
-PC = '8no api'
+TSD = Mode('Tsd',7,['0L',''])
+PC = Mode()
 
-MODES = [None,SPRINT,'freeplay',CHEESE,SURVIVAL,ULTRA,'maps',TSD    ,PC]
-
-def get_records(username, play, mode):
-    url = f'https://jstris.jezevec10.com/api/u/{username}/records/{play}?mode={mode}'   
-
-    r = requests.get(url)
-    return r.json()
-
-def create_embed(username, play, mode):
-
-    r = get_records(username, play, mode)
-    #print(play)
-    #print(mode)
-
-    if 'error' in r:
-        print(r['error'])
-        raise UsernameError()
-
-    try:
-        #try tenth first because ones can't exist without tenths? not sure if it works that way
-        mode_tenth_time = r['mode']['0.1'][0]
-        mode_tenth_freq = r['mode']['0.1'][1]
-        mode_one_time = r['mode']['1'][0]
-        mode_one_freq = r['mode']['1'][1]
-    except:
-        mode_one_time = "n/a"
-        mode_one_freq = "n/a"
-        mode_tenth_time = "n/a"
-        mode_tenth_freq = "n/a"
-    days = r['days'] or 1
-
-    playName = MODES[play].name
-    modeName = MODES[play].modes[mode]
-
-    #integrate stats thing better later
-    embed = discord.Embed(title=r['name'],
-            colour=discord.Colour(0xe67e22),
-            url=f"https://jstris.jezevec10.com/u/{r['name']}?mode={play}",
-            description=f"Displaying [{modeName} {playName}](https://jstris.jezevec10.com/?play={play}&mode={mode}) [statistics](https://jstris.jezevec10.com/{MODES[play].name.casefold()}?display=5&user={r['name']}&lines={modeName}) for player [{r['name']}](https://jstris.jezevec10.com/u/{r['name']}) on [Jstris](https://jstris.jezevec10.com)") 
-    
-    embed.add_field(name="Best", value=r['min'] if play != 4 and play != 5 else r['max'], inline=True)
-    embed.add_field(name="Worst", value=r['max'] if play != 4 and play != 5  else r['min'], inline=True)
-    embed.add_field(name="Average", value=r['avg'], inline=True)
-
-    embed.add_field(name="Total Games", value=r['games'], inline=True)
-    embed.add_field(name="Mode (1s)", value= mode_one_time, inline=True)
-    embed.add_field(name="Freq (1s)", value= mode_one_freq, inline=True)
-
-    embed.add_field(name="Days of playing", value=r['days'], inline=True)
-    embed.add_field(name="Mode (0.1s)", value=mode_tenth_time,  inline=True)
-    embed.add_field(name="Freq (0.1s)", value= mode_tenth_freq, inline=True)
-
-    embed.add_field(name="Time spent(sec lol)", value=r['sum'], inline=True)
-    embed.add_field(name="Avg. spent/day", value=r['sum']/days, inline=True)
-    embed.add_field(name="Avg. games/day", value=r['games']/days, inline=True)
-
-    return embed
-
-def sprint(username,mode):
-    try:
-        modeIndex = SPRINT.get_mode(mode)
-    except ValueError:
-        raise ModeError()
-
-    try:
-        embed = create_embed(username,SPRINT.play,modeIndex)
-    except UsernameError:
-        raise UsernameError()
-
-    return embed
-
-def cheese(username,mode):
-    try:
-        modeIndex = CHEESE.get_mode(mode)
-    except ValueError:
-        raise ModeError()
-
-    try:
-        embed = create_embed(username,CHEESE.play,modeIndex)
-    except UsernameError:
-        raise UsernameError()
-
-    return embed
-
-def survival(username,mode):
-    try:
-        modeIndex = SURVIVAL.get_mode(mode)
-    except ValueError:
-        raise ModeError()
-
-    try:
-        embed = create_embed(username,SURVIVAL.play,modeIndex)
-    except UsernameError:
-        raise UsernameError()
-
-    return embed
-
-def ultra(username,mode):
-    try:
-        modeIndex = ULTRA.get_mode(mode)
-    except ValueError:
-        raise ModeError()
-
-    try:
-        embed = create_embed(username,ULTRA.play,modeIndex)
-    except UsernameError:
-        raise UsernameError()
-
-    return embed
+#MODES = [None,SPRINT,'freeplay',CHEESE,SURVIVAL,ULTRA,'maps',TSD ,PC]
 
 def tsd(username):
     return "muda"
@@ -161,4 +122,5 @@ def embed_test():
 
     return embed
 
-#print(SPRINT.modes[1])
+print(Mode.get_records('meppydc',1,1))
+print(SPRINT.get_mode_embed('meppydc','40L'))
