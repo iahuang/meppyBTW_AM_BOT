@@ -3,6 +3,7 @@ import json
 import discord
 #jstris related features for the bot
 
+SITE = 'https://jstris.jezevec10.com'
 class ModeError(Exception):
     pass
 
@@ -24,7 +25,7 @@ class Mode:
         return self.modes.index(mode)
     
     def get_records(username, play, mode):
-        url = f'https://jstris.jezevec10.com/api/u/{username}/records/{play}?mode={mode}'   
+        url = f'{SITE}/api/u/{username}/records/{play}?mode={mode}&best'   
 
         r = requests.get(url)
         return r.json()
@@ -38,6 +39,8 @@ class Mode:
         if 'error' in r:
             print(r['error'])
             raise UsernameError()
+        
+        bestReplay = f"{SITE}/replay/{r['best'][0]['id']}" if len(r['best']) == 2 else ''
 
         try:
             #try tenth first because ones can't exist without tenths? not sure if it works that way
@@ -59,7 +62,7 @@ class Mode:
         embed = discord.Embed(title=r['name'],
                 colour=discord.Colour(0xe67e22),
                 url=f"https://jstris.jezevec10.com/u/{r['name']}?mode={play}",
-                description=f"Displaying [{modeName} {playName}](https://jstris.jezevec10.com/?play={play}&mode={mode}) [statistics](https://jstris.jezevec10.com/{playName.casefold()}?display=5&user={r['name']}&lines={modeName}) for player [{r['name']}](https://jstris.jezevec10.com/u/{r['name']}) on [Jstris](https://jstris.jezevec10.com)") 
+                description=f"Displaying [{modeName} {playName}](https://jstris.jezevec10.com/?play={play}&mode={mode}) [statistics](https://jstris.jezevec10.com/{playName.casefold()}?display=5&user={r['name']}&lines={modeName}) for player [{r['name']}](https://jstris.jezevec10.com/u/{r['name']}) on [Jstris](https://jstris.jezevec10.com)\n[Best Game]({bestReplay})") 
         
         embed.add_field(name="Best", value=r['min'] if play != 4 and play != 5 else r['max'], inline=True)
         embed.add_field(name="Worst", value=r['max'] if play != 4 and play != 5  else r['min'], inline=True)
@@ -79,7 +82,7 @@ class Mode:
 
         return embed
 
-    def get_mode_embed(self,username,mode):
+    def get_mode_embed(self, username, mode):
         try:
             modeIndex = self.get_mode(mode)
         except ValueError:
@@ -97,7 +100,7 @@ CHEESE = Mode('Cheese',3,['0L','10L','18L','100L'])
 SURVIVAL = Mode('Survival',4,['0L',''])
 ULTRA = Mode('Ultra',5,['0L',''])
 TSD = Mode('Tsd',7,['0L',''])
-PC = Mode()
+PC = Mode('PC',8,['0L',''])
 
 #MODES = [None,SPRINT,'freeplay',CHEESE,SURVIVAL,ULTRA,'maps',TSD ,PC]
 
@@ -122,5 +125,5 @@ def embed_test():
 
     return embed
 
-print(Mode.get_records('meppydc',1,1))
-print(SPRINT.get_mode_embed('meppydc','40L'))
+#print(Mode.get_records('meppydc',1,1))
+#print(SPRINT.get_mode_embed('meppydc','40L'))

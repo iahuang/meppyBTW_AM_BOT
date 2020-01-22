@@ -38,7 +38,7 @@ async def on_message(message):
 
     if message.content.lower().startswith('no u '):
         await channel.send('no u')
-    
+        
     if message.content.count('@everyone') > 0:
         for i in range(5):
             await channel.send(f"<@{message.author.id}> is bad")
