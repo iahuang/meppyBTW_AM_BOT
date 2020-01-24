@@ -70,8 +70,7 @@ async def on_message(message):
     if message.content.startswith('!everyone'):
         print('everyone')
         try:
-            await message.delete()
-            print('The message was deleted')
+            await message.delete(delay=3)
         except discord.errors.Forbidden:
             pass
         await channel.send('haha you thought this would ping everyone? Nice try buddy',delete_after=3)
