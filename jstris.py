@@ -63,7 +63,7 @@ class Mode:
                 colour=discord.Colour(0xe67e22),
                 url=f"https://jstris.jezevec10.com/u/{r['name']}?mode={play}",
                 description=f"Displaying [{modeName} {playName}](https://jstris.jezevec10.com/?play={play}&mode={mode}) [statistics](https://jstris.jezevec10.com/{playName.casefold()}?display=5&user={r['name']}&lines={modeName}) for player [{r['name']}](https://jstris.jezevec10.com/u/{r['name']}) on [Jstris](https://jstris.jezevec10.com)\n[Best Game]({bestReplay})") 
-        
+            
         embed.add_field(name="Best", value=r['min'] if play != 4 and play != 5 else r['max'], inline=True)
         embed.add_field(name="Worst", value=r['max'] if play != 4 and play != 5  else r['min'], inline=True)
         embed.add_field(name="Average", value=r['avg'], inline=True)
@@ -84,7 +84,7 @@ class Mode:
 
     def get_mode_embed(self, username, mode):
         try:
-            modeIndex = self.get_mode(mode)
+            modeIndex = self.get_mode(f'{mode}L')
         except ValueError:
             raise ModeError()
 
@@ -97,10 +97,10 @@ class Mode:
 
 SPRINT = Mode('Sprint',1,['0L','40L','20L','100L','1000L'])
 CHEESE = Mode('Cheese',3,['0L','10L','18L','100L'])
-SURVIVAL = Mode('Survival',4,['0L',''])
-ULTRA = Mode('Ultra',5,['0L',''])
-TSD = Mode('Tsd',7,['0L',''])
-PC = Mode('PC',8,['0L',''])
+SURVIVAL = Mode('Survival',4,['0L','1L'])
+ULTRA = Mode('Ultra',5,['0L','1L'])
+TSD = Mode('Tsd',7,['0L','1L'])
+PC = Mode('PC',8,['0L','1L'])
 
 #MODES = [None,SPRINT,'freeplay',CHEESE,SURVIVAL,ULTRA,'maps',TSD ,PC]
 
