@@ -5,17 +5,16 @@ import discord
 import requests
 import jstris
 
-with open('.\keys.json', 'r') as read_file:
+with open('keys.json', 'r') as read_file:
     keys = json.load(read_file)
-    TOKEN = keys["TOKEN"]   
+    TOKEN = keys["TOKEN"]
     OWNER = keys["OWNER"]
     GAY = keys["GAY"]
     SEXY = keys["SEXY"]
-    read_file.close()
-
 
 
 client = discord.Client()
+
 
 @client.event
 async def on_message(message):
@@ -26,30 +25,30 @@ async def on_message(message):
     message_id = message.id
     author = message.author
     channel = message.channel
-    
+
     if message.content.startswith('!stop') and author.id == OWNER:
         print('stop')
         sys.exit()
 
-    if author.id == GAY:
-        await channel.send(f"<@{author.id}> is gay")
+    # if author.id == GAY:
+    #     await channel.send(f"<@{author.id}> is gay")
 
-    if author.id == SEXY:
-        await channel.send(f"<@{author.id}> is sexy waifu")
+    # if author.id == SEXY:
+    #     await channel.send(f"<@{author.id}> is sexy waifu")
 
     if message.content.lower().startswith('no u'):
         await channel.send('<:nou:651252342510845964>')
         await channel.send('no u')
-        
+
     if message.content.count('@everyone') > 0:
         if author.dm_channel == None:
             await author.create_dm()
         for i in range(5):
-            await channel.send(f"<@{author.id}> is bad",delete_after=1)
+            await channel.send(f"<@{author.id}> is bad", delete_after=1)
             await author.dm_channel.send(f"<@{author.id}> is bad")
         return
 
-    #commands after
+    # commands after
     if not message.content.startswith('!'):
         return
 
@@ -63,7 +62,7 @@ async def on_message(message):
         return
 
     if message.content.startswith('!pepega'):
-        print('pepega') 
+        print('pepega')
         await channel.send(f'<:pepega:639322808782028800> <@{author.id}> is supa pepega <:pepega:639322808782028800>')
         return
 
@@ -73,9 +72,9 @@ async def on_message(message):
             await message.delete(delay=3)
         except discord.errors.Forbidden:
             pass
-        await channel.send('haha you thought this would ping everyone? Nice try buddy',delete_after=3)
+        await channel.send('haha you thought this would ping everyone? Nice try buddy', delete_after=3)
         return
-    
+
     if message.content.startswith('!sprint'):
         args = message.content.split(' ')[1:]
         if len(args) < 1:
@@ -87,10 +86,10 @@ async def on_message(message):
             mode = '40'
         else:
             mode = str(args[1])
-        print(username,mode)
+        print(username, mode)
 
         try:
-            result = jstris.SPRINT.get_mode_embed(username,mode)
+            result = jstris.SPRINT.get_mode_embed(username, mode)
             await channel.send(embed=result)
         except jstris.ModeError:
             print(f'sprint invalid mode {mode}')
@@ -111,10 +110,10 @@ async def on_message(message):
             mode = '100'
         else:
             mode = str(args[1])
-        print('cheese',username,mode)
+        print('cheese', username, mode)
 
         try:
-            result = jstris.CHEESE.get_mode_embed(username,mode)
+            result = jstris.CHEESE.get_mode_embed(username, mode)
             await channel.send(embed=result)
         except jstris.ModeError:
             print(f'cheese invalid mode {mode}')
@@ -132,10 +131,10 @@ async def on_message(message):
             return
         username = str(args[0])
         mode = ''
-        print('survival',username,mode)
+        print('survival', username, mode)
 
         try:
-            result = jstris.SURVIVAL.get_mode_embed(username,mode)
+            result = jstris.SURVIVAL.get_mode_embed(username, mode)
             await channel.send(embed=result)
         except jstris.ModeError:
             print(f'survival invalid mode {mode}')
@@ -153,10 +152,10 @@ async def on_message(message):
             return
         username = str(args[0])
         mode = ''
-        print('ultra',username,mode)
+        print('ultra', username, mode)
 
         try:
-            result = jstris.ULTRA.get_mode_embed(username,mode)
+            result = jstris.ULTRA.get_mode_embed(username, mode)
             await channel.send(embed=result)
         except jstris.ModeError:
             print(f'ultra invalid mode {mode}')
@@ -173,7 +172,7 @@ async def on_message(message):
         return
 
     if message.content.startswith('!message'):
-        content = message.content.replace('!message','')
+        content = message.content.replace('!message', '')
         await channel.send(content)
         return
 
@@ -182,7 +181,7 @@ async def on_message(message):
         embed = jstris.embed_test()
         await channel.send(embed=embed)
         return
-    
+
     if message.content.startswith('!emojis'):
         listemojis = channel.guild.emojis
         length = len(listemojis)
@@ -197,16 +196,17 @@ async def on_message(message):
             result += f'<{a}:{emoji.name}:{emoji.id}> '
         if result != '':
             await channel.send(result)
-                
-        #await channel.send(result)
 
-    #await channel.send("Invalid command")
+        # await channel.send(result)
+
+    # await channel.send("Invalid command")
+
 
 @client.event
 async def on_ready():
     print('Logged in as')
     print(client.user.name)
     print(client.user.id)
-    #print(client.emojis)
+    # print(client.emojis)
 
 client.run(TOKEN)

@@ -24,6 +24,7 @@ class Mode:
         #raises ValueError
         return self.modes.index(mode)
     
+    @staticmethod
     def get_records(username, play, mode):
         url = f'{SITE}/api/u/{username}/records/{play}?mode={mode}&best'   
 
